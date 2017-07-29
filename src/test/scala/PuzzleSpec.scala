@@ -78,8 +78,12 @@ class PuzzleSpec extends WordSpec{
   }
 
   "Gameplay" must {
-    "be playable" in {
-
+    "print congats message if moves will lead to win" in {
+      val gameStream = new java.io.ByteArrayOutputStream()
+      val field = Field.createByField(Vector[Byte](1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 15))
+      val input = List(15.toByte).toIterator
+      Game(field, input, new Presenter(gameStream)).play
+      assert(gameStream.toString.contains("The game is over"))
     }
   }
 }

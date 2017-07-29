@@ -1,0 +1,23 @@
+The implemented system is tested (src/test/scala/PuzzleSpec.scala) and consists of
+such independent parts:
+1. IO:
+  - Presenter: present current board state into custom output stream
+  - Input: for our game, input could be any Iterator, that can be transformed to Iterator[Byte]
+    using validate method
+2. Field:
+  - I store board in Vector[Byte]. Not multidimensional cause we can perform all needed
+    operations with Vector. Byte - because 1 - 16 easily can be stored there.
+  - to generate board I use such approach: generate infinite lazy stream of random board states
+    and take first one that can be solved
+    ATTENTION: a bit of over engineering here - we can create field of different sizes. Yes, in
+    the task I've read "15-puzzle" board, but I've added ability to create board of different size
+    to fully implement algorithm of board validation (http://www.geeksforgeeks.org/check-instance-15-puzzle-solvable/)
+  - another parts of implementation are expressive enough to understand them without readme
+3. Game:
+  The idea of the game is:
+  we have BOARD STATE and INFINITE SERIES OF MOVES. We don't change anything, we only apply each MOVE
+  from INFINITE SERIES to our BOARD STATE to receive new BOARD STATE and to apply another move,
+  and stop if BOARD becomes None (it becomes None when solved). More in src/main/scala/Game.scala
+
+  My another idea was to save HISTORY (List[Move]), and get current board state by applying history
+   on current state. It is similar variant, but uses mutable lists.

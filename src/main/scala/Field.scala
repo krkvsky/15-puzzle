@@ -27,14 +27,15 @@ case class Field(field: Vector[Byte], size: Byte) {
   }
 
   override def toString = {
-    field.grouped(size).map(_.mkString("\t")).mkString("\n").replaceAll(squaredSize.toString, "@")
+    field.grouped(size).map(_.mkString("\t")).mkString("\n").replaceAll(squaredSize.toString, "@") + "\n"
   }
 }
 
 object Field {
   def create(size: Byte = 4) = new Field(generateField(size), size)
-  def create2(field: Vector[Byte], size: Byte = 4) = new Field(field, size)
-  // can add extra constructor like create(Vector[Byte]) to avoid generateField usage
+
+  def createByField(field: Vector[Byte], size: Byte = 4) = new Field(field, size)
+  // add extra constructor for testing purposes
 
   def generateField(size: Byte): Vector[Byte] = {
     def l: Stream[Vector[Byte]] = shuffle(1 to 15).map(_.toByte).toVector #:: l
