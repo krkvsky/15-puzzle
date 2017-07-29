@@ -6,8 +6,11 @@ class PuzzleSpec extends WordSpec{
     val field = Field.create()
 
     "be printable" in {
-//      assert(field.toString.length > 0)
+      assert(field.toString.length > 0)
+    }
 
+    "contain all information from field" in {
+      field.field
     }
 
   }
