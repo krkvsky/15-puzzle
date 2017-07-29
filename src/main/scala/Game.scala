@@ -1,10 +1,11 @@
-class Game private (val field: Field) {
-  def play(moves: Iterator[Byte]): Option[Field] = {
-    moves
+class Game private (val field: Field, val input: Iterator[Byte], val presenter: Presenter) {
+  def play: Option[Field] = {
+    input
+      .takeWhile(x => !presenter.outStream.toString.contains("wone"))
       .scanLeft(Some(field): Option[Field])(
         (f, m) => {
           val newField = f.flatMap(_.move(m))
-          Presenter(newField)
+          presenter.show(newField)
           newField
         }
       )
@@ -14,8 +15,8 @@ class Game private (val field: Field) {
 }
 
 object Game {
-  def apply(field: Field) = {
-    Presenter(Some(field))
-    new Game(field)
+  def apply(field: Field, input: Iterator[Byte], presenter: Presenter = Presenter()) = {
+    presenter.show(Some(field))
+    new Game(field, input, presenter)
   }
 }

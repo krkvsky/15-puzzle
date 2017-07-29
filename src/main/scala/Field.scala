@@ -33,7 +33,7 @@ case class Field(field: Vector[Byte], size: Byte) {
 
 object Field {
   def create(size: Byte = 4) = new Field(generateField(size), size)
-
+  def create2(field: Vector[Byte], size: Byte = 4) = new Field(field, size)
   // can add extra constructor like create(Vector[Byte]) to avoid generateField usage
 
   def generateField(size: Byte): Vector[Byte] = {

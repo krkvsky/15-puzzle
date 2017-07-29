@@ -46,20 +46,18 @@ class PuzzleSpec extends WordSpec{
 
   "Presenter" must {
     val stream = new java.io.ByteArrayOutputStream()
+    val presenter = Presenter(stream)
     "Print game field" in {
       assert(stream.size == 0)
       val field = Field.create()
-      Console.withOut(stream) {
-        Presenter(Some(field))
-      }
+      presenter.show(Some(field))
       assert(stream.size != 0)
     }
     "Perform another action if game is ended" in {
       val anotherStream = new java.io.ByteArrayOutputStream()
+      val presenter2 = Presenter(anotherStream)
       assert(anotherStream.size == 0)
-      Console.withOut(anotherStream) {
-        Presenter(None)
-      }
+      presenter2.show(None)
       assert(anotherStream.size != 0)
       assert(anotherStream.size != stream.size)
     }
@@ -80,6 +78,8 @@ class PuzzleSpec extends WordSpec{
   }
 
   "Gameplay" must {
+    "be playable" in {
 
+    }
   }
 }
