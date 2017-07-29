@@ -16,7 +16,7 @@ case class Field(field: Vector[Byte], size: Byte) {
     validMove(move) match {
       case Some((x, y)) => {
         val newField = this.swap(x, y)
-        if(newField.isSolved) None else Some(newField)
+        if(Field.isSolved(newField.field)) None else Some(newField)
       }
       case None => Some(this)
     }
@@ -24,10 +24,6 @@ case class Field(field: Vector[Byte], size: Byte) {
 
   def swap(i1: Int, i2: Int): Field = {
     this.copy(field = field.updated(i1, field(i2)).updated(i2, field(i1)))
-  }
-
-  def isSolved: Boolean = {
-    field equals field.sorted
   }
 
   override def toString = {
@@ -38,19 +34,22 @@ case class Field(field: Vector[Byte], size: Byte) {
 object Field {
   def create(size: Byte = 4) = new Field(generateField(size), size)
 
+  // can add extra constructor like create(Vector[Byte]) to avoid generateField usage
+
   def generateField(size: Byte): Vector[Byte] = {
+    def l: Stream[Vector[Byte]] = shuffle(1 to 15).map(_.toByte).toVector #:: l
+    l.filter(valid).filterNot(isSolved).head :+ (size*size).toByte
+  }
+
+  def valid(field: Vector[Byte]): Boolean ={
     def inversions(field: List[Byte]): Int = field match {
       case Nil => 0
       case x :: xs => xs.count(_ < x) + inversions(xs)
     }
-    def valid(field: Vector[Byte], size: Byte): Boolean ={
-      if(size % 2 == 0)
-        inversions(field.toList) % 2 == 0
-      else
-        inversions(field.toList) % 2 != 0
-    }
+    inversions(field.toList) % 2 == 0
+  }
 
-    def l: Stream[Vector[Byte]] = shuffle(1 to 15).map(_.toByte).toVector #:: l
-    l.filter(valid(_, size)).head :+ (size*size).toByte
+  def isSolved(field: Vector[Byte]): Boolean = {
+    field equals field.sorted
   }
 }

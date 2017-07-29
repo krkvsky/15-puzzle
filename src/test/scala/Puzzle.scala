@@ -4,22 +4,82 @@ class PuzzleSpec extends WordSpec{
 
   "Field" must{
     val field = Field.create()
+    val innerField = field.field
+
+    "generate valid board" in {
+      assert(
+        !Field.valid(Vector[Byte](1,2,3,4,5,6,7,8,9,10,11,12,13,15,14))
+      )
+      assert(
+        Field.valid(Vector[Byte](1,2,3,4,5,6,7,8,9,10,11,12,13,14,15))
+      )
+    }
 
     "be printable" in {
       assert(field.toString.length > 0)
     }
 
     "contain all information from field" in {
-      field.field
+      assert(innerField.count(x => field.toString.contains(x.toString)) == (innerField.length - 1))
     }
 
+    "can apply swap on elements" in {
+      val first = innerField.updated(2, innerField(1)).updated(1, innerField(2))
+      val second = field.swap(1, 2).field
+      assert(first equals second)
+    }
+
+    "apply move only if it is valid" in {
+      assert(! (field.move(innerField(14)).get equals field))
+      assert(field.move(innerField(1)).get equals field)
+    }
+
+    "check for being solved" in {
+      assert(!Field.isSolved(Vector[Byte](
+        1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 15
+      )))
+      assert(Field.isSolved(Vector[Byte](
+        1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16
+      )))
+    }
   }
-//
-//  "Input" should {
-//
-//  }
-//
-//  "Gameplay" should {
-//
-//  }
+
+  "Presenter" must {
+    val stream = new java.io.ByteArrayOutputStream()
+    "Print game field" in {
+      assert(stream.size == 0)
+      val field = Field.create()
+      Console.withOut(stream) {
+        Presenter(Some(field))
+      }
+      assert(stream.size != 0)
+    }
+    "Perform another action if game is ended" in {
+      val anotherStream = new java.io.ByteArrayOutputStream()
+      assert(anotherStream.size == 0)
+      Console.withOut(anotherStream) {
+        Presenter(None)
+      }
+      assert(anotherStream.size != 0)
+      assert(anotherStream.size != stream.size)
+    }
+  }
+
+  "Input" must {
+    "validate different occasions" in {
+      assert(Input.validate("12"))
+      assert(!Input.validate("thisisstring"))
+      assert(!Input.validate(""))
+      assert(!Input.validate("128"))
+    }
+
+    "accept any string iterators" in {
+      val etern = Stream.continually("42").toIterator
+      assert(Input.input(etern).isInstanceOf[Iterator[Byte]])
+    }
+  }
+
+  "Gameplay" must {
+
+  }
 }
