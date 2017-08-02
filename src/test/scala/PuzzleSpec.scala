@@ -1,5 +1,7 @@
 import org.scalatest.{FlatSpec, WordSpec}
 
+import scala.io.Source
+
 class PuzzleSpec extends WordSpec{
 
   "Field" must{
@@ -75,14 +77,19 @@ class PuzzleSpec extends WordSpec{
       val etern = Stream.continually("42").toIterator
       assert(Input.input(etern).isInstanceOf[Iterator[Byte]])
     }
+
+    "for example file" in {
+      val fromFile : Iterator[String] = Source.fromResource("field").getLines
+      assert(Input.input(fromFile).isInstanceOf[Iterator[Byte]])
+    }
   }
 
   "Gameplay" must {
     "print congats message if moves will lead to win" in {
       val gameStream = new java.io.ByteArrayOutputStream()
       val field = Field.createByField(Vector[Byte](1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 15))
-      val input = List(15.toByte).toIterator
-      Game(field, input, new Presenter(gameStream)).play
+      val input = Input.input(Source.fromResource("field").getLines)
+      Game(field, input, Presenter(gameStream)).play
       assert(gameStream.toString.contains("over"))
     }
   }

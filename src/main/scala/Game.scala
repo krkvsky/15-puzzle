@@ -1,17 +1,15 @@
 
 class Game private (val field: Field, val input: Iterator[Byte], val presenter: Presenter) {
-  def play: Option[Field] = {
+  def play(): Unit = {
     input
-      .takeWhile(_ => !presenter.outStream.toString.contains("wone"))
       .scanLeft(Some(field): Option[Field])(
         (f, m) => {
-          val newField = f.flatMap(_.move(m))
-          presenter.show(newField)
-          newField
+          presenter.show(
+            f.flatMap(_.move(m))
+          )
         }
       )
       .find(_.isEmpty)
-      .flatten
   }
 }
 
