@@ -1,23 +1,18 @@
 import scala.util.Random.shuffle
 
 case class Field(field: Vector[Byte], size: Byte) {
-  def squaredSize = size * size
+  def squaredSize: Int = size * size
 
   def move(move: Byte): Option[Field] = {
     def validMove(move: Byte): Option[(Int, Int)]= {
       val indexMove = field.indexOf(move)
       val indexEmpty = field.indexOf(squaredSize)
       val distance = scala.math.abs(indexEmpty-indexMove)
-      if(distance == 1 || distance == size)
-        Some(indexMove, indexEmpty)
-      else
-        None
+      Option(indexMove, indexEmpty).filter(_ => distance == 1 || distance == size)
     }
     validMove(move) match {
-      case Some((x, y)) => {
-        val newField = this.swap(x, y)
-        if(Field.isSolved(newField.field)) None else Some(newField)
-      }
+      case Some((x, y)) =>
+        Option(this.swap(x, y)).filter(newField => !Field.isSolved(newField.field))
       case None => Some(this)
     }
   }
@@ -26,15 +21,17 @@ case class Field(field: Vector[Byte], size: Byte) {
     this.copy(field = field.updated(i1, field(i2)).updated(i2, field(i1)))
   }
 
-  override def toString = {
+  override def toString: String = {
     field.grouped(size).map(_.mkString("\t")).mkString("\n").replaceAll(squaredSize.toString, "@") + "\n"
   }
 }
 
 object Field {
-  def create(size: Byte = 4) = new Field(generateField(size), size)
+  val DefaultSize = 4.toByte
 
-  def createByField(field: Vector[Byte], size: Byte = 4) = new Field(field, size)
+  def create(size: Byte = DefaultSize): Field = new Field(generateField(size), size)
+
+  def createByField(field: Vector[Byte], size: Byte = DefaultSize):Field = new Field(field, size)
   // add extra constructor for testing purposes
 
   def generateField(size: Byte): Vector[Byte] = {

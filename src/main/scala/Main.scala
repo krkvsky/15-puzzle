@@ -1,4 +1,3 @@
-import scala.io.Source
 
 object Main extends App{
   val field = Field.create()
